@@ -55,120 +55,121 @@
 %>
 
 <body>
-<jsp:include page="../static/header.jsp"/>
-<jsp:include page="../static/sidebar.jsp"/>
+    <jsp:include page="../static/header.jsp"/>
+    <jsp:include page="../static/sidebar.jsp"/>
 
-<main id="main" class="main">
 
-    <div class="pagetitle">
-        <h1>Page d'Achat</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.jsp">Accueil</a></li>
-                <li class="breadcrumb-item active">Achat</li>
-            </ol>
-        </nav>
-    </div>
+    <main id="main" class="main">
 
-    <section class="section">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Acheter une cryptomonnaie</h5>
-
-                        <form id="achatForm">
-                            <input type="hidden" id="userId" value="<%= utilisateurId %>">
-                    
-                            <label for="cryptoSelect">Sélectionnez une cryptomonnaie :</label>
-                            <select id="cryptoSelect">
-                                <% for (CryptoMonnaie crypto : cryptoMonnaies) { %>
-                                    <option value="<%= crypto.getId() %>">
-                                        <%= crypto.getDesignation() %> (<%= crypto.getSymbol() %>)
-                                    </option>
+        <div class="pagetitle">
+            <h1>Page d'Achat</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.jsp">Accueil</a></li>
+                    <li class="breadcrumb-item active">Achat</li>
+                </ol>
+            </nav>
+        </div>
+    
+        <section class="section">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Acheter une cryptomonnaie</h5>
+    
+                            <form id="achatForm">
+                                <input type="hidden" id="userId" value="<%= utilisateurId %>">
+                        
+                                <label for="cryptoSelect">Sélectionnez une cryptomonnaie :</label>
+                                <select id="cryptoSelect">
+                                    <% for (CryptoMonnaie crypto : cryptoMonnaies) { %>
+                                        <option value="<%= crypto.getId() %>">
+                                            <%= crypto.getDesignation() %> (<%= crypto.getSymbol() %>)
+                                        </option>
+                                    <% } %>
+                                </select>
+                        
+                                <label for="quantiteInput">Quantité :</label>
+                                <input type="number" id="quantiteInput" required>
+                        
+                                <button type="button" id="submitAchat">Acheter</button>
+                            </form>
+                        
+                            <div id="resultMessage" class="mt-3"></div>
+                            <div class="mt-3">Votre Solde : <h1><%=utilisateur.getSolde()%></h1> </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section">
+            <div class="row">
+                <div class="col-lg-12">
+    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Default Table</h5>
+    
+                            <!-- Default Table -->
+                            <table class="table" id="cryptoTable">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Crypto</th>
+                                    <th scope="col">Qantite</th>
+                                    <th scope="col">Prix Unitaire</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <% for(Portefeuille portefeuille : portefeuilleUser) { %>
+                                <tr>
+                                    <td><%=portefeuille.getCryptoMonnaie().getSymbol()%></td>
+                                    <td><%=portefeuille.getQuantite()%></td>
+                                    <td><%=portefeuille.getCryptoMonnaie().getPrixUnitaire()%></td>
+    
+                                </tr>
                                 <% } %>
-                            </select>
-                    
-                            <label for="quantiteInput">Quantité :</label>
-                            <input type="number" id="quantiteInput" required>
-                    
-                            <button type="button" id="submitAchat">Acheter</button>
-                        </form>
-                    
-                        <div id="resultMessage" class="mt-3"></div>
-                        <div class="mt-3">Votre Solde : <h1><%=utilisateur.getSolde()%></h1> </div>
+                                </tbody>
+                            </table>
+                            <!-- End Default Table Example -->
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-    <section class="section">
-        <div class="row">
-            <div class="col-lg-12">
+        </section>
+    </main>
 
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Default Table</h5>
-
-                        <!-- Default Table -->
-                        <table class="table" id="cryptoTable">
-                            <thead>
-                            <tr>
-                                <th scope="col">Crypto</th>
-                                <th scope="col">Qantite</th>
-                                <th scope="col">Prix Unitaire</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <% for(Portefeuille portefeuille : portefeuilleUser) { %>
-                            <tr>
-                                <td><%=portefeuille.getCryptoMonnaie().getSymbol()%></td>
-                                <td><%=portefeuille.getQuantite()%></td>
-                                <td><%=portefeuille.getCryptoMonnaie().getPrixUnitaire()%></td>
-
-                            </tr>
-                            <% } %>
-                            </tbody>
-                        </table>
-                        <!-- End Default Table Example -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-</main>
-
-<script>
-    $(document).ready(function () {
-        $("#submitAchat").on("click", function () {
-            const userId = $("#userId").val();
-            const cryptoId = $("#cryptoSelect").val();
-            const quantite = $("#quantiteInput").val();
-
-            if (quantite > 0) {
-                $.ajax({
-                    url: "/api/achat/achat",
-                    type: "POST",
-                    data: {
-                        userId: userId,
-                        cryptoId: cryptoId,
-                        quantite: quantite
-                    },
-                    success: function (response) {
-                        $("#resultMessage").html('<div class="alert alert-success">' + response + '</div>');
-                    },
-                    error: function (xhr, status, error) {
-                        $("#resultMessage").html('<div class="alert alert-danger">Erreur : ' + xhr.responseText + '</div>');
-                    }
-                });
-            } else {
-                $("#resultMessage").html('<div class="alert alert-warning">Veuillez saisir une quantité valide.</div>');
-            }
+    <script>
+        $(document).ready(function () {
+            $("#submitAchat").on("click", function () {
+                const userId = $("#userId").val();
+                const cryptoId = $("#cryptoSelect").val();
+                const quantite = $("#quantiteInput").val();
+    
+                if (quantite > 0) {
+                    $.ajax({
+                        url: "/api/achat/achat",
+                        type: "POST",
+                        data: {
+                            userId: userId,
+                            cryptoId: cryptoId,
+                            quantite: quantite
+                        },
+                        success: function (response) {
+                            $("#resultMessage").html('<div class="alert alert-success">' + response + '</div>');
+                        },
+                        error: function (xhr, status, error) {
+                            $("#resultMessage").html('<div class="alert alert-danger">Erreur : ' + xhr.responseText + '</div>');
+                        }
+                    });
+                } else {
+                    $("#resultMessage").html('<div class="alert alert-warning">Veuillez saisir une quantité valide.</div>');
+                }
+            });
         });
-    });
-</script>
-
+    </script>
+    
 </body>
-    <jsp:include page="../static/footer.jsp"/>
+<jsp:include page="../static/footer.jsp"/>
 
 </html>
