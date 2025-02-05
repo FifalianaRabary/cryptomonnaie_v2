@@ -35,6 +35,7 @@ public class LogoutController {
         }
 
         return "redirect:/graph";
+        
     }
 }
 
