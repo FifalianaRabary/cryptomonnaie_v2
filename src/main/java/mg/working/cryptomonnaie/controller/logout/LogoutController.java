@@ -2,6 +2,7 @@ package mg.working.cryptomonnaie.controller.logout;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import mg.working.cryptomonnaie.model.user.Utilisateur;
 import mg.working.cryptomonnaie.services.logout.LogoutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,22 +17,24 @@ public class LogoutController {
         this.logoutService = logoutService;
     }
 
-    @GetMapping("logout")
+    @GetMapping("/logout")
     public String validateOperation(HttpServletRequest request, HttpSession session) {
         String jeton = (String) session.getAttribute("jeton");
+        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
 
         if (jeton == null) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
-        boolean logout = logoutService.deconnexion(jeton);
+
+        boolean logout = logoutService.deconnexion(jeton,utilisateur.getId());
 
         if (logout) {
             session.invalidate();
-            return "redirect:/login/login";
+            return "redirect:/";
         }
 
-        return "redirect:/dashboard";
+        return "redirect:/graph";
     }
 }
 
