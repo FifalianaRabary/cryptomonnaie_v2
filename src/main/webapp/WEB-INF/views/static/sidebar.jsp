@@ -52,10 +52,21 @@
             </a>
         </li>
 
+        <li class="nav-item">
+            <a class="nav-link " href="/getTotal">
+                <i class="bi bi-grid"></i>
+                <span>Total des transactions</span>
+            </a>
+        </li>
 
+        <li class="nav-item">
+            <a class="nav-link " href="/logout">
+                <i class="bi bi-grid"></i>
+                <span>Se deconnecter</span>
+            </a>
+        </li>
 
     </ul>
 
-</aside><!-- End Sidebar-->
-
+</aside>
 
