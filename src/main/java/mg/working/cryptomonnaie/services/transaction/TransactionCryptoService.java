@@ -37,6 +37,10 @@ public class TransactionCryptoService {
 
     public List<TransactionCrypto> findByIdCrypto (int idCrypto) { return this.transactionCryptoRepository.findByIdCrypto(idCrypto); }
 
+    public List<TransactionCrypto> findByIdUtilisateur (int idUtilisateur) {
+        return this.transactionCryptoRepository.findByIdUtilisateur(idUtilisateur);
+    }
+
     public boolean estSuffisantSolde(int utilisateurId, BigDecimal montantTotal) {
         Utilisateur utilisateur = utilisateurService.getUtilisateurById(utilisateurId);  // Récupérer l'utilisateur
         if (utilisateur == null) {

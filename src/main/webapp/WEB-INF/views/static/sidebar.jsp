@@ -53,6 +53,13 @@
         </li>
 
         <li class="nav-item">
+            <a class="nav-link " href="/historiqueOperation">
+                <i class="bi bi-grid"></i>
+                <span>Historique Operation</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
             <a class="nav-link " href="/getTotal">
                 <i class="bi bi-grid"></i>
                 <span>Total des transactions</span>

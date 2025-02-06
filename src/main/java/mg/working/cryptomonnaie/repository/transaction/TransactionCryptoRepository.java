@@ -27,5 +27,8 @@ public interface TransactionCryptoRepository extends JpaRepository<TransactionCr
     @Query("select t from TransactionCrypto t where t.cryptoMonnaie.id = :idCrypto")
     List<TransactionCrypto> findByIdCrypto(@Param("idCrypto") int idCrypto);
 
+    @Query("select t from TransactionCrypto t where t.utilisateur.id = :idUtilisateur")
+    List<TransactionCrypto> findByIdUtilisateur(@Param("idUtilisateur") int idUtilisateur);
+
 }
 

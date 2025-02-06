@@ -37,4 +37,11 @@ public class UtilisateurService {
         utilisateur.setSolde(solde);
         this.insertUtilisateur(utilisateur);
     }
+
+    public boolean checkSoldeBeforeRetrait (Utilisateur utilisateur, double montant) {
+        if (utilisateur.getSolde() >= montant) {
+            return true;
+        }
+        return false;
+    }
 }

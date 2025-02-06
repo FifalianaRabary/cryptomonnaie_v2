@@ -5,6 +5,7 @@
 <%@ page import="mg.working.cryptomonnaie.model.user.Utilisateur" %>
 <%@ page import="mg.working.cryptomonnaie.services.transaction.TransactionCryptoService" %>
 <%@ page import="java.math.BigDecimal" %>
+<%@ page import="mg.working.cryptomonnaie.model.transaction.Total" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -53,9 +54,7 @@
     <div class="pagetitle">
         <h1>Total</h1>
 <%
-    List<Utilisateur> utilisateurs = (List<Utilisateur>) request.getAttribute("utilisateurs");
-    String dateMax = (String) request.getAttribute("dateMax");
-    TransactionCryptoService transactionCryptoService = (TransactionCryptoService) request.getAttribute("transactionCryptoService");
+    List<Total> totals = (List<Total>) request.getAttribute("totals");
 %>
     </div><!-- End Page Title -->
     <section class="section">
@@ -63,9 +62,9 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <form method="get" action="" >
+                        <form method="post" action="getTotalFiltre">
                             <label for="dateMax">Date Heure Max</label>
-                            <input type="datetime-local" name="dateMax" id="dateMax" min="0.01" step="0.01" required>
+                            <input type="datetime-local" name="dateMax" id="dateMax" required>
 
                             <input type="submit" class="btn btn-primary" value="valider">
                         </form>
@@ -86,30 +85,20 @@
                         <table class="table" id="cryptoTable">
                             <thead>
                             <tr>
-                                <th scope="col"></th>
-                                <th scope="col">nom</th>
+                                <th scope="col">Utilisateur</th>
                                 <th scope="col">Total Achat</th>
                                 <th scope="col">Total Vente</th>
-                                <th scope="col">Total Crypto</th>
-                                <th scope="col">Total Solde</th>
+                                <th scope="col">Total Portefeuille</th>
 
                             </tr>
                             </thead>
                             <tbody>
-                                <% for(Utilisateur utilisateur : utilisateurs) {
-                                    int achatTotal = transactionCryptoService.getTotalAchatByUserAndDateMax(utilisateur , dateMax);
-                                    int venteTotal = transactionCryptoService.getTotalVenteByUserAndDateMax(utilisateur , dateMax);
-                                    double soldeTotal = transactionCryptoService.getTotalSoldeByUserAndDateMax(utilisateur , dateMax);
-                                    BigDecimal cryptoTotal = transactionCryptoService.getTotalCryptoByUserAndDateMax(utilisateur , dateMax);
-
-                                %>
+                                <% for(Total total : totals) { %>
                                 <tr>
-                                    <td><%=utilisateur.getId() %></td>
-                                    <td><%=utilisateur.getNom() %></td>
-                                    <td><%=achatTotal %></td>
-                                    <td><%=venteTotal %></td>
-                                    <td><%=soldeTotal %></td>
-                                    <td><%=cryptoTotal %></td>
+                                    <td><%=total.getUtilisateur().getNom() %></td>
+                                    <td><%= total.getTotalAchat() %></td>
+                                    <td><%= total.getTotalVente() %></td>
+                                    <td><%= total.getValeurPortefeuille() %></td>
                                 </tr>
 
                                 <% } %>
