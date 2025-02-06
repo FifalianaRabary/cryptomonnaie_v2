@@ -53,9 +53,9 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link " href="/historiqueOperation">
+            <a class="nav-link " href="/historiqueTransaction">
                 <i class="bi bi-grid"></i>
-                <span>Historique Operation</span>
+                <span>Historique Transaction</span>
             </a>
         </li>
 

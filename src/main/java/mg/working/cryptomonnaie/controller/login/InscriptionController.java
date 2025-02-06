@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import mg.working.cryptomonnaie.model.user.Utilisateur;
 import mg.working.cryptomonnaie.model.util.ConfirmationAuth;
 import mg.working.cryptomonnaie.services.login.InscriptionService;
+import mg.working.cryptomonnaie.services.utilisateur.ImageUtilisateurService;
 import mg.working.cryptomonnaie.services.utilisateur.UtilisateurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,6 +26,9 @@ public class InscriptionController {
     @Autowired
     UtilisateurService utilisateurService;
 
+    @Autowired
+    ImageUtilisateurService imageUtilisateurService;
+
     @PostMapping("incription")
     public String inscription (HttpServletRequest request, HttpServletResponse response) {
         String nom = request.getParameter("nom");
@@ -40,7 +44,8 @@ public class InscriptionController {
 
     @GetMapping("confirmInscription/{jeton}")
     public String confirmInscription(@PathVariable String jeton) {
-        inscriptionService.confirmerInscription(jeton);
+        Utilisateur utilisateur = inscriptionService.confirmerInscription(jeton);
+        imageUtilisateurService.createDefaultProfileImage(utilisateur);
         return "redirect:/";
     }
 
