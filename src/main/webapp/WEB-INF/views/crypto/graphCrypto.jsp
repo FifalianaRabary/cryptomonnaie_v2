@@ -55,11 +55,6 @@
 
     <div class="pagetitle">
         <h1>Crypto Money</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item active">Evolution <%= session.getAttribute("jeton") %></li>
-            </ol>
-        </nav>
     </div><!-- End Page Title -->
     <script>
         // Fonction pour charger les cryptos via l'API REST

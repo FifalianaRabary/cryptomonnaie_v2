@@ -76,10 +76,12 @@ public class InscriptionController {
     public String checkPin(@RequestParam String pin, HttpSession session) {
 
         Utilisateur u = (Utilisateur) session.getAttribute("utilisateur");
+        String urlImage = imageUtilisateurService.getImageByUtilisateur(u);
         ConfirmationAuth confirmationAuth = inscriptionService.confirmerPin(u.getId(), pin);
 
         if (confirmationAuth.isConfirmed()) {
             session.setAttribute("jeton", confirmationAuth.getJeton());
+            session.setAttribute("urlImage", urlImage);
             return "redirect:/graph";
         }
         return "pinForm";
