@@ -63,4 +63,13 @@ public class PortefeuilleService {
         }
 
     }
+
+    public double getValeurPortefeuilleByUtilisateur (Utilisateur utilisateur) {
+        double total = 0;
+        List<Portefeuille> portefeuilles = getPortefeuilleByUser(utilisateur);
+        for (Portefeuille p : portefeuilles) {
+            total += p.getQuantite().doubleValue() * p.getCryptoMonnaie().getPrixUnitaire().doubleValue();
+        }
+        return total;
+    }
 }

@@ -37,6 +37,10 @@ public class TransactionCryptoService {
 
     public List<TransactionCrypto> findByIdCrypto (int idCrypto) { return this.transactionCryptoRepository.findByIdCrypto(idCrypto); }
 
+    public List<TransactionCrypto> findByIdUtilisateur (int idUtilisateur) {
+        return this.transactionCryptoRepository.findByIdUtilisateur(idUtilisateur);
+    }
+
     public boolean estSuffisantSolde(int utilisateurId, BigDecimal montantTotal) {
         Utilisateur utilisateur = utilisateurService.getUtilisateurById(utilisateurId);  // Récupérer l'utilisateur
         if (utilisateur == null) {
@@ -66,23 +70,8 @@ public class TransactionCryptoService {
         this.insertTransactionCrypto(transactionCrypto);
     }
 
-    // Appel à findTotalAchatByUserAndDateMax
-    public int getTotalAchatByUserAndDateMax(Utilisateur utilisateur, String dateMax) {
-        return transactionCryptoRepository.findTotalAchatByUserAndDateMax(utilisateur, dateMax);
-    }
-
-    // Appel à findTotalVenteByUserAndDateMax
-    public int getTotalVenteByUserAndDateMax(Utilisateur utilisateur, String dateMax) {
-        return transactionCryptoRepository.findTotalVenteByUserAndDateMax(utilisateur, dateMax);
-    }
-
-    // Appel à findTotalSoldeByUserAndDateMax
-    public double getTotalSoldeByUserAndDateMax(Utilisateur utilisateur, String dateMax) {
-        return transactionCryptoRepository.findTotalSoldeByUserAndDateMax(utilisateur, dateMax);
-    }
-
-    // Appel à findTotalCryptoByUserAndDateMax
-    public BigDecimal getTotalCryptoByUserAndDateMax(Utilisateur utilisateur, String dateMax) {
-        return transactionCryptoRepository.findTotalCryptoByUserAndDateMax(utilisateur, dateMax);
+    public List<TransactionCrypto> findByDateTransaction (String dateTransactionString) {
+        LocalDateTime dateTransaction = LocalDateTime.parse(dateTransactionString);
+        return transactionCryptoRepository.findByDateTransaction(dateTransaction);
     }
 }
