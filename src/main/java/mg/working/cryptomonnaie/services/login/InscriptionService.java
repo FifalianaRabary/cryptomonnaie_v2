@@ -7,6 +7,11 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserRecord;
+import com.google.firebase.auth.UserRecord.CreateRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -118,66 +123,45 @@ public class InscriptionService {
     }
 
     public String inscrireUtilisateur(String nom, String dateNaissance, String email, String motDePasse) {
-        // Préparer les données de l'utilisateur à envoyer à l'API Symfony
-        String jsonPayload = String.format(
-                "{\"nom\": \"%s\", \"dateNaissance\": \"%s\", \"email\": \"%s\", \"motDePasse\": \"%s\"}",
-                nom, dateNaissance, email, motDePasse
-        );
+        try {
+            // Créer un utilisateur dans Firebase
+            CreateRequest request = new CreateRequest()
+                    .setEmail(email)
+                    .setPassword(motDePasse)
+                    .setDisplayName(nom);
 
-        // Créer un en-tête HTTP pour l'envoi
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");
+            // Création de l'utilisateur dans Firebase
+            UserRecord userRecord = FirebaseAuth.getInstance().createUser(request);
+            String uid = userRecord.getUid(); // Récupérer l'UID de l'utilisateur Firebase
 
-        // Créer une entité HTTP avec les données et les en-têtes
-        HttpEntity<String> requestEntity = new HttpEntity<>(jsonPayload, headers);
+            // Préparer les données de l'utilisateur à envoyer à l'API Symfony
+            String jsonPayload = String.format(
+                    "{\"nom\": \"%s\", \"dateNaissance\": \"%s\", \"email\": \"%s\", \"motDePasse\": \"%s\", \"firebaseUid\": \"%s\"}",
+                    nom, dateNaissance, email, motDePasse, uid
+            );
 
-        // Appeler l'API Symfony et récupérer la réponse
-        ResponseEntity<String> response = restTemplate.exchange(SYMFONY_API_URL, HttpMethod.POST, requestEntity, String.class);
+            // Créer un en-tête HTTP pour l'envoi
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Content-Type", "application/json");
 
-        // Vérifier si l'API a renvoyé une réponse réussie
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return "Inscription réussie, veuillez vérifier votre e-mail.";
-        } else {
-            return "Erreur lors de l'inscription : " + response.getBody();
+            // Créer une entité HTTP avec les données et les en-têtes
+            HttpEntity<String> requestEntity = new HttpEntity<>(jsonPayload, headers);
+
+            // Appeler l'API Symfony et récupérer la réponse
+            ResponseEntity<String> response = restTemplate.exchange(SYMFONY_API_URL, HttpMethod.POST, requestEntity, String.class);
+
+            // Vérifier si l'API a renvoyé une réponse réussie
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return "Inscription réussie, veuillez vérifier votre e-mail.";
+            } else {
+                return "Erreur lors de l'inscription : " + response.getBody();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Erreur lors de la création de l'utilisateur Firebase ou de l'appel à l'API Symfony.";
         }
     }
-
-    // public String confirmerInscription(String jeton) {
-    //     // Construire l'URL pour confirmer l'inscription avec le jeton
-    //     String confirmUrl = "http://localhost:8000/confirm/" + jeton;
-
-    //     // Appeler l'API Symfony pour confirmer l'inscription
-    //     ResponseEntity<String> response = restTemplate.exchange(confirmUrl, HttpMethod.GET, null, String.class);
-
-    //     // Vérifier si l'API a renvoyé une réponse réussie
-    //     if (response.getStatusCode() == HttpStatus.OK) {
-    //         // Extraire les informations de l'utilisateur à partir de la réponse JSON
-    //         String responseBody = response.getBody();
-
-    //         // Par exemple, on suppose que la réponse est un JSON avec un champ "utilisateur" qui contient les informations
-    //         // Vous pouvez utiliser une bibliothèque comme Jackson ou Gson pour extraire les données du JSON
-    //         // Ici, c'est une simplification de l'extraction
-    //         JSONObject jsonResponse = new JSONObject(responseBody);
-    //         String utilisateurEmail = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("email");
-    //         String utilisateurNom = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("nom");
-    //         String utilisateurMdp = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("mdp");
-    //         String utilisateurDtn = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("dateNaissance");
-
-    //         Utilisateur utilisateur = new Utilisateur();
-    //         utilisateur.setDtn(utilisateurDtn);
-    //         utilisateur.setNom(utilisateurNom);
-    //         utilisateur.setMdp(utilisateurMdp);
-    //         utilisateur.setSolde("100000");
-    //         utilisateur.setMail(utilisateurEmail);
-    //         utilisateurService.insertUtilisateur(utilisateur);
-
-    //         // Retourner les informations de l'utilisateur (ou un autre traitement)
-    //         return "Inscription confirmée avec succès. Utilisateur: " + utilisateurNom + " (" + utilisateurEmail + ")";
-    //     } else {
-    //         return "Erreur lors de la confirmation du jeton : " + response.getBody();
-    //     }
-
-    // }
 
 
     public Utilisateur confirmerInscription(String jeton) {
