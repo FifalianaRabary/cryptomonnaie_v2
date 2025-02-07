@@ -2,6 +2,7 @@ package mg.working.cryptomonnaie.services.login;
 
 import mg.working.cryptomonnaie.model.user.Utilisateur;
 import mg.working.cryptomonnaie.model.util.ConfirmationAuth;
+import mg.working.cryptomonnaie.services.firebase.FirebaseService;
 import mg.working.cryptomonnaie.services.utilisateur.UtilisateurService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,14 @@ public class InscriptionService {
     private final String SYMFONY_AUTH_URL = "http://localhost:8000/authentification"; // URL de l'API Symfony
 
     private final String SYMFONY_PIN_URL = "http://localhost:8000/confirmPin"; // URL du service Symfony
+    
+    private final FirebaseService firebaseService;
 
 
-
-    public InscriptionService(RestTemplate restTemplate) {
+    
+    public InscriptionService(RestTemplate restTemplate , FirebaseService firebaseService) {
         this.restTemplate = restTemplate;
+        this.firebaseService = firebaseService;
     }
 
     public ConfirmationAuth confirmerPin(int idUtilisateur, String pin) {
@@ -167,27 +171,22 @@ public class InscriptionService {
         String utilisateurMdp = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("mdp");
         String utilisateurDtn = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("dateNaissance");
 
+
+        Utilisateur utilisateur = new Utilisateur();
         // Insérer l'utilisateur dans Firebase Auth
-        String firebaseUid;
         try {
-            CreateRequest request = new CreateRequest()
-                    .setEmail(utilisateurEmail)
-                    .setPassword(utilisateurMdp)
-                    .setDisplayName(utilisateurNom);
-            UserRecord userRecord = FirebaseAuth.getInstance().createUser(request);
-            firebaseUid = userRecord.getUid();
+            String firebaseUid = firebaseService.creerUtilisateurFirebase(utilisateurEmail, utilisateurMdp, utilisateurNom);
+             // Création et sauvegarde de l'utilisateur dans la base
+            utilisateur.setDtn(utilisateurDtn);
+            utilisateur.setNom(utilisateurNom);
+            utilisateur.setMdp(utilisateurMdp);
+            utilisateur.setSolde("100000");
+            utilisateur.setMail(utilisateurEmail);
+            utilisateur.setFirebaseUid(firebaseUid); // Associer l'UID Firebase
         } catch (FirebaseAuthException e) {
             throw new RuntimeException("Erreur lors de l'inscription à Firebase: " + e.getMessage());
         }
-
-        // Création et sauvegarde de l'utilisateur dans la base
-        Utilisateur utilisateur = new Utilisateur();
-        utilisateur.setDtn(utilisateurDtn);
-        utilisateur.setNom(utilisateurNom);
-        utilisateur.setMdp(utilisateurMdp);
-        utilisateur.setSolde("100000");
-        utilisateur.setMail(utilisateurEmail);
-        utilisateur.setFirebaseUid(firebaseUid); // Associer l'UID Firebase
+       
 
         Utilisateur utilisateurInsere = utilisateurService.getInsertedUtilisateur(utilisateur);
 
