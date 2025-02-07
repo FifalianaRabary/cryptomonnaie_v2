@@ -93,7 +93,11 @@
 			<artifactId>json</artifactId>
 			<version>20210307</version> <!-- Vous pouvez choisir une version plus récente si disponible -->
 		</dependency>
-
+		<dependency>
+    		<groupId>com.google.firebase</groupId>
+    		<artifactId>firebase-admin</artifactId>
+    		<version>9.0.0</version> <!-- Remplace par la dernière version disponible -->
+		</dependency>
 	</dependencies>
 
 	<build>
