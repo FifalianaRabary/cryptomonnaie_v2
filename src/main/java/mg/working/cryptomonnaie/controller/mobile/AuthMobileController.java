@@ -22,7 +22,7 @@ public class AuthMobileController {
     @PostMapping("/authMobile")
     public ResponseEntity<String> login(@RequestParam("mail") String mail, @RequestParam("mdp") String mdp) {
         ResponseEntity<String> response = authMobileService.authMobile(mail, mdp);
-
+        
         return response;
     }
 }
