@@ -7,6 +7,12 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.UserRecord;
+import com.google.firebase.auth.UserRecord.CreateRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -142,79 +148,55 @@ public class InscriptionService {
         }
     }
 
-    // public String confirmerInscription(String jeton) {
-    //     // Construire l'URL pour confirmer l'inscription avec le jeton
-    //     String confirmUrl = "http://localhost:8000/confirm/" + jeton;
-
-    //     // Appeler l'API Symfony pour confirmer l'inscription
-    //     ResponseEntity<String> response = restTemplate.exchange(confirmUrl, HttpMethod.GET, null, String.class);
-
-    //     // Vérifier si l'API a renvoyé une réponse réussie
-    //     if (response.getStatusCode() == HttpStatus.OK) {
-    //         // Extraire les informations de l'utilisateur à partir de la réponse JSON
-    //         String responseBody = response.getBody();
-
-    //         // Par exemple, on suppose que la réponse est un JSON avec un champ "utilisateur" qui contient les informations
-    //         // Vous pouvez utiliser une bibliothèque comme Jackson ou Gson pour extraire les données du JSON
-    //         // Ici, c'est une simplification de l'extraction
-    //         JSONObject jsonResponse = new JSONObject(responseBody);
-    //         String utilisateurEmail = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("email");
-    //         String utilisateurNom = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("nom");
-    //         String utilisateurMdp = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("mdp");
-    //         String utilisateurDtn = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("dateNaissance");
-
-    //         Utilisateur utilisateur = new Utilisateur();
-    //         utilisateur.setDtn(utilisateurDtn);
-    //         utilisateur.setNom(utilisateurNom);
-    //         utilisateur.setMdp(utilisateurMdp);
-    //         utilisateur.setSolde("100000");
-    //         utilisateur.setMail(utilisateurEmail);
-    //         utilisateurService.insertUtilisateur(utilisateur);
-
-    //         // Retourner les informations de l'utilisateur (ou un autre traitement)
-    //         return "Inscription confirmée avec succès. Utilisateur: " + utilisateurNom + " (" + utilisateurEmail + ")";
-    //     } else {
-    //         return "Erreur lors de la confirmation du jeton : " + response.getBody();
-    //     }
-
-    // }
-
-
+    
     public Utilisateur confirmerInscription(String jeton) {
-        // Construire l'URL pour confirmer l'inscription avec le jeton
-        String confirmUrl = "http://localhost:8000/confirm/" + jeton;
-    
-        // Appeler l'API Symfony pour confirmer l'inscription
-        ResponseEntity<String> response = restTemplate.exchange(confirmUrl, HttpMethod.GET, null, String.class);
-    
-        // Vérifier si l'API a renvoyé une réponse réussie
-        if (response.getStatusCode() == HttpStatus.OK) {
-            // Extraire les informations de l'utilisateur à partir de la réponse JSON
-            String responseBody = response.getBody();
-    
-            // Parse le JSON de la réponse
-            JSONObject jsonResponse = new JSONObject(responseBody);
-            String utilisateurEmail = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("email");
-            String utilisateurNom = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("nom");
-            String utilisateurMdp = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("mdp");
-            String utilisateurDtn = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("dateNaissance");
-    
-            // Création et sauvegarde de l'utilisateur
-            Utilisateur utilisateur = new Utilisateur();
-            utilisateur.setDtn(utilisateurDtn);
-            utilisateur.setNom(utilisateurNom);
-            utilisateur.setMdp(utilisateurMdp);
-            utilisateur.setSolde("100000");
-            utilisateur.setMail(utilisateurEmail);
-    
-            Utilisateur utilisateurInsere = utilisateurService.getInsertedUtilisateur(utilisateur);
-    
-            // Retourne l'utilisateur inséré avec l'ID attribué
-            return utilisateurInsere;
-        } else {
-            throw new RuntimeException("Erreur lors de la confirmation du jeton : " + response.getBody());
+    // Construire l'URL pour confirmer l'inscription avec le jeton
+    String confirmUrl = "http://localhost:8000/confirm/" + jeton;
+
+    // Appeler l'API Symfony pour confirmer l'inscription
+    ResponseEntity<String> response = restTemplate.exchange(confirmUrl, HttpMethod.GET, null, String.class);
+
+    // Vérifier si l'API a renvoyé une réponse réussie
+    if (response.getStatusCode() == HttpStatus.OK) {
+        // Extraire les informations de l'utilisateur à partir de la réponse JSON
+        String responseBody = response.getBody();
+
+        JSONObject jsonResponse = new JSONObject(responseBody);
+        String utilisateurEmail = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("email");
+        String utilisateurNom = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("nom");
+        String utilisateurMdp = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("mdp");
+        String utilisateurDtn = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("dateNaissance");
+
+        // Insérer l'utilisateur dans Firebase Auth
+        String firebaseUid;
+        try {
+            CreateRequest request = new CreateRequest()
+                    .setEmail(utilisateurEmail)
+                    .setPassword(utilisateurMdp)
+                    .setDisplayName(utilisateurNom);
+            UserRecord userRecord = FirebaseAuth.getInstance().createUser(request);
+            firebaseUid = userRecord.getUid();
+        } catch (FirebaseAuthException e) {
+            throw new RuntimeException("Erreur lors de l'inscription à Firebase: " + e.getMessage());
         }
+
+        // Création et sauvegarde de l'utilisateur dans la base
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setDtn(utilisateurDtn);
+        utilisateur.setNom(utilisateurNom);
+        utilisateur.setMdp(utilisateurMdp);
+        utilisateur.setSolde("100000");
+        utilisateur.setMail(utilisateurEmail);
+        utilisateur.setFirebaseUid(firebaseUid); // Associer l'UID Firebase
+
+        Utilisateur utilisateurInsere = utilisateurService.getInsertedUtilisateur(utilisateur);
+
+        return utilisateurInsere;
+    } else {
+        throw new RuntimeException("Erreur lors de la confirmation du jeton : " + response.getBody());
     }
+}
+
     
 
 }

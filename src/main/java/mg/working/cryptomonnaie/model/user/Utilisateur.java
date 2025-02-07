@@ -36,6 +36,16 @@ public class Utilisateur {
     private String mdp;
     private Date dtn;
     private double solde = 0.0;
+    private String firebaseUid;
+
+
+    public String getFirebaseUid() {
+        return firebaseUid;
+    }
+
+    public void setFirebaseUid(String firebaseUid) {
+        this.firebaseUid = firebaseUid;
+    }
 
     // Getter et Setter pour id
     public int getId() {
