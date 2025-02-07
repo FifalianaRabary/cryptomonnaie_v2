@@ -83,7 +83,7 @@ public class Utilisateur {
     }
 
     // Setter pour dtn avec String
-    public void setDtn(String dtn) {
+    public void setDtnFromString(String dtn) {
         this.dtn = Date.valueOf(dtn);
     }
 
@@ -96,7 +96,7 @@ public class Utilisateur {
         this.solde = solde;
     }
 
-    public void setSolde(String solde) {
+    public void setSoldeFromString(String solde) {
         this.solde = Double.parseDouble(solde);
     }
 

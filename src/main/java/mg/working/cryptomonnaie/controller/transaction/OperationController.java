@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import mg.working.cryptomonnaie.model.analyse.MvtCommission;
 import mg.working.cryptomonnaie.model.transaction.Operation;
 import mg.working.cryptomonnaie.model.user.Utilisateur;
+import mg.working.cryptomonnaie.services.firebase.UtilisateurSync;
 import mg.working.cryptomonnaie.services.transaction.OperationService;
 import mg.working.cryptomonnaie.services.utilisateur.UtilisateurService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ import java.util.List;
 
 @Controller
 public class OperationController {
+    @Autowired
+    UtilisateurSync utilisateurSync;
 
     @Autowired
     OperationService operationService;
@@ -54,6 +57,8 @@ public class OperationController {
         operation.setMontant(BigDecimal.valueOf(montant));
         operation.setUtilisateur(utilisateurService.getUtilisateurById(utilisateurId));
         operationService.save(operation);
+
+        //sync solde firebase
 
         String redirectUrl = "operation";
         response.getWriter().write("<script type='text/javascript'>alert(' Demande de " + typeOperation + " envoyer ');window.location.href = '" + redirectUrl + "';</script>");

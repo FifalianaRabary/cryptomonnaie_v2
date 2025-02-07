@@ -2,6 +2,7 @@ package mg.working.cryptomonnaie.controller.transaction;
 
 import jakarta.servlet.http.HttpServletRequest;
 import mg.working.cryptomonnaie.model.transaction.TransactionCrypto;
+import mg.working.cryptomonnaie.services.firebase.UtilisateurSync;
 import mg.working.cryptomonnaie.services.transaction.TransactionCryptoService;
 import mg.working.cryptomonnaie.services.utilisateur.ImageUtilisateurService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ import java.util.Map;
 
 @Controller
 public class TransactionCryptoController {
+
+    @Autowired
+    UtilisateurSync utilisateurSync;
 
     @Autowired
     TransactionCryptoService transactionCryptoService;

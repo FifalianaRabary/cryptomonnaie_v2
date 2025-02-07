@@ -8,6 +8,7 @@ import mg.working.cryptomonnaie.model.util.ConfirmationAuth;
 import mg.working.cryptomonnaie.services.login.InscriptionService;
 import mg.working.cryptomonnaie.services.utilisateur.ImageUtilisateurService;
 import mg.working.cryptomonnaie.services.utilisateur.UtilisateurService;
+import mg.working.cryptomonnaie.services.firebase.UtilisateurSync;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,9 @@ import java.net.http.HttpRequest;
 
 @Controller
 public class InscriptionController {
+
+    @Autowired
+    UtilisateurSync utilisateurSync;
 
     @Autowired
     InscriptionService inscriptionService;
@@ -46,6 +50,9 @@ public class InscriptionController {
     public String confirmInscription(@PathVariable String jeton) {
         Utilisateur utilisateur = inscriptionService.confirmerInscription(jeton);
         imageUtilisateurService.createDefaultProfileImage(utilisateur);
+
+        //sync to firebase utilisateur
+        utilisateurSync.syncToFirebase(utilisateur);
         return "redirect:/";
     }
 

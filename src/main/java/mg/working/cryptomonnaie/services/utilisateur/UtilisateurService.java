@@ -62,7 +62,7 @@ public class UtilisateurService {
     }
 
     public void updateSoldeUtilisateur(Utilisateur utilisateur , String solde) {
-        utilisateur.setSolde(solde);
+        utilisateur.setSoldeFromString(solde);
         this.insertUtilisateur(utilisateur);
     }
 

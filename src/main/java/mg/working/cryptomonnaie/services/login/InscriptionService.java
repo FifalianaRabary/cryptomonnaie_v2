@@ -201,10 +201,10 @@ public class InscriptionService {
     
             // Création et sauvegarde de l'utilisateur
             Utilisateur utilisateur = new Utilisateur();
-            utilisateur.setDtn(utilisateurDtn);
+            utilisateur.setDtnFromString(utilisateurDtn);
             utilisateur.setNom(utilisateurNom);
             utilisateur.setMdp(utilisateurMdp);
-            utilisateur.setSolde("100000");
+            utilisateur.setSoldeFromString("100000");
             utilisateur.setMail(utilisateurEmail);
     
             Utilisateur utilisateurInsere = utilisateurService.getInsertedUtilisateur(utilisateur);

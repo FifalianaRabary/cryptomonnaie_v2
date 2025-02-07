@@ -6,6 +6,7 @@ import mg.working.cryptomonnaie.model.transaction.Portefeuille;
 import mg.working.cryptomonnaie.model.user.Utilisateur;
 import mg.working.cryptomonnaie.services.analyse.MvtCommissionService;
 import mg.working.cryptomonnaie.services.crypto.CryptoMonnaieService;
+import mg.working.cryptomonnaie.services.firebase.UtilisateurSync;
 import mg.working.cryptomonnaie.services.transaction.MvtSoldeService;
 import mg.working.cryptomonnaie.services.transaction.PortefeuilleService;
 import mg.working.cryptomonnaie.services.transaction.TransactionCryptoService;
@@ -21,6 +22,11 @@ import java.util.List;
 @Controller
 @RequestMapping("/api/vente")
 public class VenteController {
+
+    @Autowired
+    UtilisateurSync utilisateurSync;
+
+
     @Autowired
     CryptoMonnaieService cryptoMonnaieService;
     @Autowired

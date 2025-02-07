@@ -55,7 +55,7 @@ public class ProfileUtilisateurController {
       
         utilisateur.setNom(nom);
         utilisateur.setMail(mail);
-        utilisateur.setDtn(dtn);
+        utilisateur.setDtnFromString(dtn);
         utilisateur.setMdp(mdp);
         boolean estUpdated = utilisateurService.updateUtilisateurComplete(utilisateur);
 

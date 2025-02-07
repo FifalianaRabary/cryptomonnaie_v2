@@ -12,6 +12,7 @@ import mg.working.cryptomonnaie.repository.utilisateur.UtilisateurRepository;
 import mg.working.cryptomonnaie.model.user.Utilisateur;
 import mg.working.cryptomonnaie.services.analyse.MvtCommissionService;
 import mg.working.cryptomonnaie.services.crypto.CryptoMonnaieService;
+import mg.working.cryptomonnaie.services.firebase.UtilisateurSync;
 import mg.working.cryptomonnaie.services.mail.EmailService;
 import mg.working.cryptomonnaie.services.transaction.MvtCryptoService;
 import mg.working.cryptomonnaie.services.transaction.PortefeuilleService;
@@ -35,6 +36,9 @@ import java.util.UUID;
 @Controller
 @RequestMapping("api/achat")
 public class AchatController {
+
+    @Autowired
+    UtilisateurSync utilisateurSync;
 
     @Autowired
     private PendingTransactionRepository pendingTransactionRepository;
@@ -189,6 +193,9 @@ public class AchatController {
 
         // Ajouter la quantité de crypto à l'utilisateur
         cryptoMonnaieService.ajouterQuantiteCrypto(utilisateur.getId(), crypto.getId(), transaction.getQuantite());
+
+        //sync to firebase utilisateur
+        utilisateurSync.syncToFirebase(utilisateur);
 
         return "Votre achat a été validé avec succès.";
     }
