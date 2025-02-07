@@ -4,6 +4,9 @@ import org.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import com.google.firebase.auth.FirebaseAuth;
+
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
@@ -15,6 +18,20 @@ public class AuthMobileService {
 
     public AuthMobileService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+      // Méthode pour valider l'utilisateur Firebase en fonction de l'email et du uid
+    public boolean isValidUser(String mail, String uid) {
+        try {
+            // Récupérer l'utilisateur Firebase en fonction de l'uid
+            com.google.firebase.auth.UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
+
+            // Vérifier si l'email de l'utilisateur correspond à l'email passé en paramètre
+            return userRecord.getEmail().equals(mail);
+        } catch (Exception e) {
+            // Si une erreur se produit lors de la récupération de l'utilisateur, on considère l'authentification comme échouée
+            return false;
+        }
     }
 
     public ResponseEntity<String> authMobile(String mail, String mdp) {
