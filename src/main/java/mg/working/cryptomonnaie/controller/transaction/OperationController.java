@@ -59,7 +59,7 @@ public class OperationController {
         operationService.save(operation);
 
         //sync solde firebase
-
+        
         String redirectUrl = "operation";
         response.getWriter().write("<script type='text/javascript'>alert(' Demande de " + typeOperation + " envoyer ');window.location.href = '" + redirectUrl + "';</script>");
     }
