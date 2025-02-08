@@ -93,7 +93,6 @@ public class FirestoreService {
 
         // Préparer les données de la transaction
         Map<String, Object> transactionData = new HashMap<>();
-        transactionData.put("id", transactionCrypto.getId());
         transactionData.put("id_utilisateur", transactionCrypto.getUtilisateur().getId());
         transactionData.put("mail", transactionCrypto.getUtilisateur().getMail());
         transactionData.put("id_crypto", transactionCrypto.getCryptoMonnaie().getId());
@@ -101,8 +100,7 @@ public class FirestoreService {
         transactionData.put("prix_total", transactionCrypto.getPrixTotal().doubleValue());
         transactionData.put("date_heure", transactionCrypto.getDateHeure().toString());
         transactionData.put("type_transaction", transactionCrypto.getTypeTransaction().toString());
-        transactionData.put("pourcentage_commission", transactionCrypto.getPourcentage_commission().doubleValue());
-        transactionData.put("valeur_commission", transactionCrypto.getValeur_commission().doubleValue());
+        
 
         // Insérer dans Firestore
         try {

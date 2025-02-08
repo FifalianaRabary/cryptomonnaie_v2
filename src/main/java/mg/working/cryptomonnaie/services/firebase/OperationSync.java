@@ -48,18 +48,17 @@ public class OperationSync {
                             DocumentSnapshot doc = dc.getDocument();
                             String documentId = doc.getId();
                             String operationType = doc.getString("typeOperation");
-                            String operationNom = doc.getString("operation");
-                            Integer utilisateurId = doc.getLong("utilisateurId").intValue();
+                            // Integer utilisateurId = doc.getLong("utilisateurId").intValue();
+                            String mail = doc.getString("mail");
                             BigDecimal montant = BigDecimal.valueOf(doc.getLong("montant"));
 
                             System.out.println("\n🔹 Nouvelle opération détectée !");
                             System.out.println(" ID Document : " + documentId);
-                            System.out.println(" Opération : " + operationNom);
                             System.out.println(" Type : " + operationType);
-                            System.out.println(" Utilisateur ID : " + utilisateurId);
                             System.out.println("Montant : " + montant);
 
-                            Utilisateur utilisateur = utilisateurService.getUtilisateurById(utilisateurId);
+
+                            Utilisateur utilisateur = utilisateurService.getUtilisateurByEmail(mail);
 
                             if (utilisateur != null) {
                                 Operation operationEntity = new Operation();
@@ -75,7 +74,7 @@ public class OperationSync {
                                 // 🔥 Suppression immédiate du document Firestore après traitement
                                 deleteFirestoreDocument(documentId);
                             } else {
-                                System.out.println("⚠ Utilisateur non trouvé pour l'ID : " + utilisateurId);
+                                System.out.println("⚠ Utilisateur non trouvé pour le mail : " +mail );
                             }
                         }
                     }
