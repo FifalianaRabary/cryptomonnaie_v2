@@ -1,11 +1,14 @@
 package mg.working.cryptomonnaie.controller.transaction;
 
 import jakarta.servlet.http.HttpSession;
+import mg.working.cryptomonnaie.model.analyse.MvtCommission;
 import mg.working.cryptomonnaie.model.crypto.CryptoMonnaie;
 import mg.working.cryptomonnaie.model.transaction.Portefeuille;
+import mg.working.cryptomonnaie.model.transaction.TransactionCrypto;
 import mg.working.cryptomonnaie.model.user.Utilisateur;
 import mg.working.cryptomonnaie.services.analyse.MvtCommissionService;
 import mg.working.cryptomonnaie.services.crypto.CryptoMonnaieService;
+import mg.working.cryptomonnaie.services.firebase.FirestoreService;
 import mg.working.cryptomonnaie.services.firebase.UtilisateurSync;
 import mg.working.cryptomonnaie.services.transaction.MvtSoldeService;
 import mg.working.cryptomonnaie.services.transaction.PortefeuilleService;
@@ -17,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -26,6 +30,9 @@ public class VenteController {
     @Autowired
     UtilisateurSync utilisateurSync;
 
+
+    @Autowired
+    FirestoreService firestoreService;
 
     @Autowired
     CryptoMonnaieService cryptoMonnaieService;
@@ -67,10 +74,31 @@ public class VenteController {
         double newSoldeUser = utilisateur.calculNewSolde(Double.parseDouble(valeurTotalVente.toString()));
         utilisateur.setSolde(newSoldeUser);
 
+        utilisateurService.insertUtilisateur(utilisateur);
+
+        //sync to firebase utilisateur
+        utilisateurSync.syncToFirebase(utilisateur);
+
         Portefeuille portefeuille = this.portefeuilleService.getPortefeuilleByCrypto(cryptoMonnaie);
         this.portefeuilleService.updateQuantiteCrypto(portefeuille , quantite);
         this.mvtSoldeService.insertNewMvtSolde(utilisateur,valeurTotalVente, BigDecimal.valueOf(newSoldeUser));
         this.transactionCryptoService.insertNewTransactionCrypto(utilisateur,cryptoMonnaie , quantite , valeurTotalVente);
+
+        MvtCommission.TypeTransaction typeTransaction = MvtCommission.TypeTransaction.VENTE;
+        MvtCommission commission = mvtCommissionService.getLastMvtCommissionByTypeTransaction(typeTransaction);
+
+        TransactionCrypto transactionCrypto = new TransactionCrypto();
+        transactionCrypto.setUtilisateur(utilisateur);
+        transactionCrypto.setCryptoMonnaie(cryptoMonnaie);
+        transactionCrypto.setQuantite(quantite);
+        transactionCrypto.setPrixTotal(valeurTotalVente);
+        transactionCrypto.setDateHeure(LocalDateTime.now());
+        transactionCrypto.setTypeTransaction(TransactionCrypto.TypeTransaction.VENTE);
+        transactionCrypto.setPourcentage_commission(commission.getPourcentage_commission());
+        transactionCrypto.setValeur_commission();
+
+        
+        firestoreService.syncTransactionToFirestore(transactionCrypto);
 
         return "redirect:/api/vente/ventePage";
     }

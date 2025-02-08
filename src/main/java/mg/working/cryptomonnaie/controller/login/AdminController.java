@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import mg.working.cryptomonnaie.model.transaction.Operation;
 import mg.working.cryptomonnaie.model.user.Admin;
 import mg.working.cryptomonnaie.model.user.Utilisateur;
+import mg.working.cryptomonnaie.services.firebase.UtilisateurSync;
 import mg.working.cryptomonnaie.services.transaction.OperationService;
 import mg.working.cryptomonnaie.services.utilisateur.AdminService;
 import mg.working.cryptomonnaie.services.utilisateur.UtilisateurService;
@@ -20,6 +21,9 @@ import java.util.List;
 
 @Controller
 public class AdminController {
+
+    @Autowired
+    UtilisateurSync utilisateurSync;
 
     @Autowired
     AdminService adminService;
@@ -72,6 +76,10 @@ public class AdminController {
         }
 
         utilisateurService.insertUtilisateur(utilisateur);
+
+        //sync utilisateur to firebase
+        utilisateurSync.syncToFirebase(utilisateur);
+
 
         return "redirect:/validateOperation";
     }
