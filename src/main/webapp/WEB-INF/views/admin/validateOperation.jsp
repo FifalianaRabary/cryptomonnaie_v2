@@ -50,7 +50,7 @@
 %>
 
 <body>
-<jsp:include page="../static/header.jsp"/>
+<jsp:include page="../static/headerAdmin.jsp"/>
 
 <main id="main" class="main">
 
