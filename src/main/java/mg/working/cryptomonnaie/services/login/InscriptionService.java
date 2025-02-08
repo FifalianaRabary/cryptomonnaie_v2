@@ -151,43 +151,7 @@ public class InscriptionService {
 
 
 
-    // public Utilisateur confirmerInscription(String jeton) {
-    //     // Construire l'URL pour confirmer l'inscription avec le jeton
-    //     String confirmUrl = "http://localhost:8000/confirm/" + jeton;
-    
-    //     // Appeler l'API Symfony pour confirmer l'inscription
-    //     ResponseEntity<String> response = restTemplate.exchange(confirmUrl, HttpMethod.GET, null, String.class);
-    
-    //     // Vérifier si l'API a renvoyé une réponse réussie
-    //     if (response.getStatusCode() == HttpStatus.OK) {
-    //         // Extraire les informations de l'utilisateur à partir de la réponse JSON
-    //         String responseBody = response.getBody();
-    
-    //         // Parse le JSON de la réponse
-    //         JSONObject jsonResponse = new JSONObject(responseBody);
-    //         String utilisateurEmail = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("email");
-    //         String utilisateurNom = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("nom");
-    //         String utilisateurMdp = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("mdp");
-    //         String utilisateurDtn = jsonResponse.getJSONObject("data").getJSONObject("utilisateur").getString("dateNaissance");
-    
-    //         // Création et sauvegarde de l'utilisateur
-    //         Utilisateur utilisateur = new Utilisateur();
-    //         utilisateur.setDtnFromString(utilisateurDtn);
-    //         utilisateur.setNom(utilisateurNom);
-    //         utilisateur.setMdp(utilisateurMdp);
-    //         utilisateur.setSoldeFromString("100000");
-    //         utilisateur.setMail(utilisateurEmail);
-    
-    //         Utilisateur utilisateurInsere = utilisateurService.getInsertedUtilisateur(utilisateur);
-    
-    //         // Retourne l'utilisateur inséré avec l'ID attribué
-    //         return utilisateurInsere;
-    //     } else {
-    //         throw new RuntimeException("Erreur lors de la confirmation du jeton : " + response.getBody());
-    //     }
-    // }
-
-      public Utilisateur confirmerInscription(String jeton) {
+      public Utilisateur confirmerInscription(String jeton , String mdpNonHasher) {
         // Construire l'URL pour confirmer l'inscription avec le jeton
         String confirmUrl = "http://localhost:8000/confirm/" + jeton;
 
@@ -209,7 +173,7 @@ public class InscriptionService {
             Utilisateur utilisateur = new Utilisateur();
             // Insérer l'utilisateur dans Firebase Auth
             try {
-                String firebaseUid = firebaseService.creerUtilisateurFirebase(utilisateurEmail, utilisateurMdp, utilisateurNom);
+                String firebaseUid = firebaseService.creerUtilisateurFirebase(utilisateurEmail, mdpNonHasher, utilisateurNom);
                 // Création et sauvegarde de l'utilisateur dans la base
                 utilisateur.setDtnFromString(utilisateurDtn);
                 utilisateur.setNom(utilisateurNom);

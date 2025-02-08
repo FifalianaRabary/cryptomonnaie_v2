@@ -34,12 +34,12 @@ public class InscriptionController {
     ImageUtilisateurService imageUtilisateurService;
 
     @PostMapping("incription")
-    public String inscription (HttpServletRequest request, HttpServletResponse response) {
+    public String inscription (HttpSession session,HttpServletRequest request, HttpServletResponse response) {
         String nom = request.getParameter("nom");
         String dtn = request.getParameter("dtn");
         String mail = request.getParameter("mail");
         String mdp = request.getParameter("mdp");
-
+        session.setAttribute("mdpNonHasher", mdp);
         inscriptionService.inscrireUtilisateur(nom, dtn, mail, mdp);
 
         return "redirect:/";
@@ -47,10 +47,12 @@ public class InscriptionController {
     }
 
     @GetMapping("confirmInscription/{jeton}")
-    public String confirmInscription(@PathVariable String jeton) {
-        Utilisateur utilisateur = inscriptionService.confirmerInscription(jeton);
+    public String confirmInscription(HttpSession session ,@PathVariable String jeton) {
+        String mdpNonHasher = (String) session.getAttribute("mdpNonHasher");
+        Utilisateur utilisateur = inscriptionService.confirmerInscription(jeton , mdpNonHasher);
+        session.invalidate();
         imageUtilisateurService.createDefaultProfileImage(utilisateur);
-
+        
         //sync to firebase utilisateur
         utilisateurSync.syncToFirebase(utilisateur);
         return "redirect:/";
