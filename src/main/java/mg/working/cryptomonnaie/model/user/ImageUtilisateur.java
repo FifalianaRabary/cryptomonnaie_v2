@@ -22,13 +22,17 @@ public class ImageUtilisateur {
     @Column(name = "url", nullable = false)
     private String url;
 
+    @Column(name = "mail", nullable = false, unique = true)
+    private String mail;
+
     // Constructeur par défaut
     public ImageUtilisateur() {}
 
     // Constructeur avec paramètres
-    public ImageUtilisateur(Utilisateur utilisateur, String url) {
+    public ImageUtilisateur(Utilisateur utilisateur, String url, String mail) {
         this.utilisateur = utilisateur;
         this.url = url;
+        this.mail = mail;
     }
 
     // Getter et Setter pour id
@@ -56,5 +60,14 @@ public class ImageUtilisateur {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    // Getter et Setter pour mail
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 }

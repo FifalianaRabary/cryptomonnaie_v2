@@ -14,6 +14,7 @@ public interface ImageUtilisateurRepository extends JpaRepository<ImageUtilisate
 
     Optional<ImageUtilisateur> findByUtilisateur(Utilisateur utilisateur);
 
-    
+    Optional<ImageUtilisateur> findByMail(String mail);
+
 
 }

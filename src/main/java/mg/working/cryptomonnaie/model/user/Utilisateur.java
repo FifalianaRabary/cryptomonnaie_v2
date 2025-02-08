@@ -36,6 +36,16 @@ public class Utilisateur {
     private String mdp;
     private Date dtn;
     private double solde = 0.0;
+    private String firebaseUid;
+
+
+    public String getFirebaseUid() {
+        return firebaseUid;
+    }
+
+    public void setFirebaseUid(String firebaseUid) {
+        this.firebaseUid = firebaseUid;
+    }
 
     // Getter et Setter pour id
     public int getId() {
@@ -83,7 +93,7 @@ public class Utilisateur {
     }
 
     // Setter pour dtn avec String
-    public void setDtn(String dtn) {
+    public void setDtnFromString(String dtn) {
         this.dtn = Date.valueOf(dtn);
     }
 
@@ -96,7 +106,7 @@ public class Utilisateur {
         this.solde = solde;
     }
 
-    public void setSolde(String solde) {
+    public void setSoldeFromString(String solde) {
         this.solde = Double.parseDouble(solde);
     }
 

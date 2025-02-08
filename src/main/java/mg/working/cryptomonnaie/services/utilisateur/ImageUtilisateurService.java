@@ -4,6 +4,8 @@ import mg.working.cryptomonnaie.model.user.ImageUtilisateur;
 import mg.working.cryptomonnaie.model.user.Utilisateur;
 import mg.working.cryptomonnaie.repository.utilisateur.ImageUtilisateurRepository;
 import mg.working.cryptomonnaie.repository.utilisateur.UtilisateurRepository;
+import mg.working.cryptomonnaie.services.firebase.ImageUtilisateurSync;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +25,8 @@ public class ImageUtilisateurService {
     private ImageUtilisateurRepository imageUtilisateurRepository;
 
     @Autowired
-    private UtilisateurRepository utilisateurRepository;
+    private ImageUtilisateurSync imageUtilisateurSync;
+
     @Autowired
     private UtilisateurService utilisateurService;
 
@@ -32,8 +35,11 @@ public class ImageUtilisateurService {
     }
 
     public void createDefaultProfileImage(Utilisateur utilisateur) {
-        ImageUtilisateur imageUtilisateur = new ImageUtilisateur(utilisateur, URL_DEFAULT_PROFILE_IMAGE);
+        ImageUtilisateur imageUtilisateur = new ImageUtilisateur(utilisateur, URL_DEFAULT_PROFILE_IMAGE,utilisateur.getMail());
         imageUtilisateurRepository.save(imageUtilisateur);
+        System.out.println("AVANT SYNC IMAGEEEEEEEEEEEEE :");
+        imageUtilisateurSync.syncToFirebase(imageUtilisateur);
+
     }
 
     public String getImageByUtilisateur(Utilisateur utilisateur) {
@@ -64,7 +70,10 @@ public class ImageUtilisateurService {
         // Si l'image existe, mettre à jour son URL
         if (imageUtilisateur != null) {
             imageUtilisateur.setUrl(newImageUrl);  // Mise à jour de l'URL de l'image
-            imageUtilisateurRepository.save(imageUtilisateur);  // Sauvegarde dans la base de données
+            imageUtilisateurRepository.save(imageUtilisateur); 
+            System.out.println("UPDATE FIREBASE IMAGE");
+            imageUtilisateurSync.syncToFirebase(imageUtilisateur);
+            // Sauvegarde dans la base de données
             System.out.println("Image mise à jour avec succès !");
         } else {
             System.out.println("Aucune image trouvée pour cet utilisateur.");
