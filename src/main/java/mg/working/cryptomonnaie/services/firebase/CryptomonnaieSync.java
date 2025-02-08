@@ -34,7 +34,7 @@ public class CryptomonnaieSync {
         this.cryptoMonnaieRepository = cryptoMonnaieRepository;
     }
 
-    // @Scheduled(fixedRate = 10000)  // Exécution toutes les 10 secondes
+    @Scheduled(fixedRate = 10000)  // Exécution toutes les 10 secondes
     public void syncCryptoMonnaiesToFirestore() {
         System.out.println("SYNC CRYPTO DEBUT ");
         try {

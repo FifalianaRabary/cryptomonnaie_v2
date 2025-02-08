@@ -96,20 +96,15 @@
                                         <div class="invalid-feedback">Please enter your password!</div>
                                     </div>
 
+    
                                     <div class="col-12">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe">
-                                            <label class="form-check-label" for="rememberMe">Remember me</label>
-                                        </div>
+                                        <button class="btn btn-primary w-100" type="submit">s'inscrire</button>
                                     </div>
                                     <div class="col-12">
-                                        <button class="btn btn-primary w-100" type="submit">Inscription</button>
+                                        <p class="small mb-0">Vous avez un compte? <a href="loginForm">Se connecter</a></p>
                                     </div>
                                     <div class="col-12">
-                                        <p class="small mb-0">Vous avez un compte? <a href="loginForm">I have an account</a></p>
-                                    </div>
-                                    <div class="col-12">
-                                        <p class="small mb-0">Etes vous un admin? <a href="loginAdminForm">Log as an admin</a></p>
+                                        <p class="small mb-0">Etes vous un admin? <a href="loginAdminForm">Se connecter en tant qu'admin</a></p>
                                     </div>
                                 </form>
 
@@ -134,6 +129,23 @@
 </main>
 
 </body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const passwordInput = document.getElementById("yourPassword");
+        const submitButton = document.querySelector("button[type='submit']");
+
+        function validatePassword() {
+            const password = passwordInput.value;
+            const isValid = password.length >= 6 && !password.includes(" ");
+            submitButton.disabled = !isValid;
+        }
+
+        passwordInput.addEventListener("input", validatePassword);
+        validatePassword(); // Valider dès le chargement de la page
+    });
+</script>
+
 
 </html>
 
